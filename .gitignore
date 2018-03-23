@@ -1,0 +1,48 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS && Eclipse ###
+.apt_generated
+.factorypath
+.springBeans
+.sts4-cache
+.classpath
+.project
+/.classpath
+/.project
+.settings
+/*/.classpath
+/*/.project
+/*/.settings/*
+/*/*/.classpath
+/*/*/.project
+/*/*/.settings/*
+
+# Log file
+*.log
+logs
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+.mvn
+mvnw
+mvnw.cmd
+
+### NetBeans ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar

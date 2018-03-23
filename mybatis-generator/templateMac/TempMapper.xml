@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${logicPkgProj}.dao.${corePkgBusi}.${pkgSub}.${className}Mapper" >
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  Result Map  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+    <!-- 定义java Bean的属性与数据库的列之间的映射 -->
+<resultMap id="BaseResultMap" type="${corePkgProj}.${corePkgBusi}.${pkgSub}.$!{className}To" >
+#foreach($item in $!{columnDatas})
+    <result column="$!item.columnName" property="$item.propertyName"/>
+#end
+</resultMap>
+
+<resultMap id="DtoResultMap" type="${coreDtoPkgProj}.${corePkgBusi}.${pkgSub}.$!{className}DTO" >
+    #foreach($item in $!{columnDatas})
+    <result column="$!item.columnName" property="$item.propertyName"/>
+    #end
+</resultMap>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Column ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<sql id="base_column_list" >
+     $!{SQL.columnFields}
+</sql>
+
+<sql id="select_column_list" >
+     $!{SQL.columnFieldsWithNick}
+</sql>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Query Condition ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- 查询条件 -->
+<sql id="where_condition">
+<trim prefix="WHERE" prefixOverrides="AND|OR">
+    #set($loName = $!{lowerName})
+#foreach($item in $!{columnDatas})
+    #set($testStr =  $loName + "." + $!item.propertyName + " != null")
+    #if($!item.dataType == 'String')
+        #set($testStr = $!testStr + " and " + $loName + "." +  $!item.propertyName + " != ''''")
+    #end
+    <if test="$!testStr" >
+        and $!{tableNickName}.$!item.columnName =  #{$loName.$!item.propertyName}
+    </if>
+#end
+</trim>
+</sql>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Model Query ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- 查询${codeName}总数 -->
+<select id="queryCountMap" resultType="java.lang.Integer"  parameterType="Object">
+    select count(1) from ${tableName} ${tableNickName}
+    <include refid="where_condition"/>
+</select>
+
+<!-- 查询${codeName}列表 -->
+<select id="queryListByPagerMap" resultMap="BaseResultMap"  parameterType="Object">
+    select
+    <include refid="select_column_list"/>
+    from ${tableName} ${tableNickName}
+    <include refid="where_condition"/>
+    <if test="page != null" >
+        <if test="page.orderCondition != null and page.orderCondition != ''" >
+            ${page.orderCondition}
+        </if>
+    </if>
+</select>
+
+<!-- 查询${codeName}所有记录 -->
+<select id="queryListAllMap" resultMap="BaseResultMap"  parameterType="Object">
+    select
+    <include refid="select_column_list"/>
+    from ${tableName} ${tableNickName}
+    <include refid="where_condition"/>
+    <if test="page != null" >
+        <if test="page.orderCondition != null and page.orderCondition != ''" >
+            ${page.orderCondition}
+        </if>
+    </if>
+</select>
+
+    <!-- 根据id查询${codeName} -->
+<select id="queryById"  resultMap="BaseResultMap" parameterType="Object">
+    $!{SQL.selectById}
+</select>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Dto Query ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- 查询${codeName}列表 -->
+<select id="queryDtoListByPager" resultMap="DtoResultMap"  parameterType="Object">
+    select
+    <include refid="select_column_list"/>
+    from ${tableName} ${tableNickName}
+    <include refid="where_condition"/>
+    <if test="page != null" >
+        <if test="page.orderCondition != null and page.orderCondition != ''" >
+            ${page.orderCondition}
+        </if>
+    </if>
+</select>
+
+<!-- 查询${codeName}所有记录 -->
+<select id="queryDtoListAll" resultMap="DtoResultMap"  parameterType="Object">
+    select
+    <include refid="select_column_list"/>
+    from ${tableName} ${tableNickName}
+    <include refid="where_condition"/>
+    <if test="page != null" >
+        <if test="page.orderCondition != null and page.orderCondition != ''" >
+            ${page.orderCondition}
+        </if>
+    </if>
+</select>
+
+<!-- 根据id查询${codeName} -->
+<select id="queryDtoById"  resultMap="DtoResultMap" parameterType="Object">
+    $!{SQL.selectById}
+</select>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Insert ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- 新增${codeName}记录 -->
+<insert id="add" parameterType="Object">
+  $!{SQL.insert}
+</insert>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Update  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+     <!-- 修改${codeName}记录，只修改只不为空的字段 -->
+<update id="updateByTo" parameterType="Object" >
+    $!{SQL.updateTo}
+</update>
+
+    <!-- 根据id修改${codeName}记录-->
+<update id="update" parameterType="Object" >
+    $!{SQL.update}
+</update>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Delete  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- 删除${codeName}记录 -->
+<update id="delete" parameterType="Object">
+    $!{SQL.delete}
+</update>
+
+</mapper>   
